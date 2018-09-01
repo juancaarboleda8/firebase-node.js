@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>conectarse a firebase</title>
+	<meta charset="utf-8">
+	<style type="text/css">
+		body{
+        	font-family: Verdana;
+			font-size: 120%;
+			padding: 4em 4em 4em 4em;
+		}
+
+	</style>
+	<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+		var socket = io();
+
+        function recolectarDatos() {
+        	var datos = {}
+        	datos.usuario = document.getElementById('usuario').value
+        	datos.contraseña = document.getElementById('pasaporte').value
+        	return datos
+        }
+
+		function enviarDatos() {
+			var datos = recolectarDatos();
+			var serializado = "";
+			serializado = JSON.stringify(datos)
+            socket.emit('datosSeguridad',serializado);
+            console.log(serializado)
+		}
+
+		socket.on('datosSeguridad',function (mensaje) {
+			if (mensaje=='correcto') {
+				alert('loggin perfecto')
+			}else{
+				alert('algo salio mal verificar')
+			}
+		})
+
+		function datosRegistrar() {
+			var datos = {}
+			datos.name = document.getElementById('name').value
+			datos.contraseña = document.getElementById('contraseña1').value
+			if (datos.contraseña == document.getElementById('contraseña2').value) {
+				return datos
+			}else{
+				return ""
+			}
+		}
+
+		function Ingresar() {
+			var datos = datosRegistrar()
+			if (datos == "") {
+				alert('las contraseñas no son iguales')
+			}else{
+				var datos = datosRegistrar();
+				var serializado = "";
+				serializado = JSON.stringify(datos);
+				var request = new XMLHttpRequest();
+				request.open("POST","/Ingresar",false);
+				request.send(serializado);
+				console.log('enviado perfecto');
+			}
+		}
+
+		function MostrarUsuarios() {
+			// Declarar el objeto que hace la peticion
+			var xhr = new XMLHttpRequest();
+			xhr.open(  "GET", "/status", false ); 
+			xhr.send( );
+			var respuesta = xhr.responseText;
+			console.log( respuesta );
+			var dat = JSON.parse(respuesta);
+			console.log(respuesta.split(" "))
+			var tabla = "hola tabla";
+
+		}
+	</script>
+</head>
+<body>
+	<h1 id="Formulario">Formulario para Ingresar</h1>
+	<label>Nombre</label>
+	<input type="text" id="usuario">
+	<label>Contraseña</label>
+	<input type="password" id="pasaporte">
+	<button onclick="enviarDatos()">Probar datos</button>
+
+
+	<h1>Escribir en una base de datos en firebase</h1>
+	<label>Nombre usuario</label>
+	<input type="text" id="name">
+	<label>Ingresar contraseña</label>
+	<input type="password" id="contraseña1">
+	<label>Ingresar contraseña</label>
+	<input type="password" id="contraseña2">
+	<button onclick="Ingresar()">Registrar datos </button>
+
+
+	<h1>Lista de usuarios en la base de datos</h1>
+	<button onclick="MostrarUsuarios()">Cargar</button>
+	<table>
+	<thead>
+		<tr>
+			<th>Usuario</th>
+		</tr>
+	</thead>
+	<tbody id="tabla">
+		<tr>
+			<td>juanc camilo</td>
+		</tr>
+	
+	</tbody>
+	</table>
+
+
+</body>
+</html>
